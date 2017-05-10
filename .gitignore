@@ -44,3 +44,13 @@ captures/
 
 .externalNativeBuild
 app/google-services.json
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Private data
+SERVER/data/tokens.db
+SERVER/data/admin.token
+SERVER/data/lddns

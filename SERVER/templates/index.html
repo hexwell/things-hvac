@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/16.2.6/css/dx.spa.css" />
+        <link rel="stylesheet" type="text/css" href="https://cdn3.devexpress.com/jslib/16.2.6/css/dx.common.css" />
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+        <script src="https://cdn3.devexpress.com/jslib/16.2.6/js/dx.all.js"></script>
+    </head>
+    <body>
+        <style>
+            body {
+                background-color: rgb(42, 42, 42);
+            }
+
+            #gauge {
+                height: 100%;
+                width: 100%;
+            }
+
+            button {
+                padding: 20px 20px;
+                font-size: 20px;
+                background-color: rgb(150, 150, 150);
+                border: none;
+                text-decoration: none;
+            }
+        </style>
+
+        <div class="demo-container">
+            <div id="gauge"></div>
+        </div>
+        <div><center>
+            <span>
+                <button id="plus">+</button>
+                <button id="minus">-</button>
+            </span>
+        </center></div>
+
+        <script type="text/javascript">
+            var current, wanted, sending_data = false;
+
+            function update_local(change){
+                if(change){
+                    $("#gauge").dxBarGauge({
+                        startValue: 0,
+                        endValue: 40,
+                        relativeInnerRadius: 0.6,
+                        barSpacing: 2,
+                        values: [current, wanted],
+                        theme: "generic.dark",
+                        palette: "pastel",
+                        label: {
+                            indent: 30,
+                            format: {
+                                type: "decimal",
+                                precision: 1
+                            },
+                            customizeText: function(arg){return arg.valueText + "°";}
+                        },
+                        "export": {
+                            enabled: false
+                        },
+                        title: {
+                            text: "Temperatures",
+                            font: {
+                                size: 28
+                            },
+                            subtitle: {
+                                text: "outer: current, inner: wanted"
+                            }
+                        },
+                    });
+                }
+            }
+
+            function rx_update(){
+                if(!sending_data){
+                    var old = [current, wanted];
+                    $.get("/data/", function(data, status){
+                        current = data['current'];
+                        wanted = data['wanted'];
+                        update_local(current != old[0] || wanted != old[1]);
+                    });
+                }
+            }
+
+            function tx_update(){
+                sending_data = true;
+                $.ajax({
+                    url: "/data/",
+                    type: "POST",
+                    data: JSON.stringify({wanted: wanted}),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                }).always(function(){setTimeout(function() { sending_data = false; }, 5000);});
+            }
+
+            $(document).ready(function(){
+                $("#plus").click(function(event) {
+                    wanted += 1;
+                    update_local(true);
+                    tx_update();
+                });
+                $("#minus").click(function(event) {
+                    wanted -= 1;
+                    update_local(true);
+                    tx_update();
+                });
+            });
+
+            rx_update();
+            setInterval(rx_update, 5000);
+        </script>
+    </body>
+</html>
