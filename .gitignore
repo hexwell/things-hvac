@@ -43,3 +43,4 @@ captures/
 *.hprof
 
 .externalNativeBuild
+app/google-services.json
