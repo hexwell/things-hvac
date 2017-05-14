@@ -62,7 +62,7 @@ public class HomeActivity extends Activity {
 
 	// Thermostat main variables
 	private int current;
-	private int wanted;
+	private int wanted = 18;
 	private int hvacStatus;
 
 	//WiFi status
@@ -370,11 +370,13 @@ public class HomeActivity extends Activity {
 				while ((read = arduinoDevice.read(buffer, buffer.length)) > 0) {
 					String decoded = (new String(buffer)).substring(0, read);
 
+					int lastCmdAt = 0;
 					for(int i = 0; i < decoded.length(); i++){
 						if(decoded.charAt(i) == TERMINATOR){
-							handleCmd(decoded.substring(0, i));
+							handleCmd(decoded.substring(lastCmdAt, i));
+							lastCmdAt = i + 1;
 						}
-						if(i >= MAX_CMD_LEN){ decoded = decoded.substring(i); i = 0; }
+						if(i - lastCmdAt - 1 >= MAX_CMD_LEN){lastCmdAt = i + 1;}
 					}
 				}
 			} catch (IOException e) {

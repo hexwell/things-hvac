@@ -161,6 +161,7 @@ void interpret(){
 
 void sync(){
   Serial.write("u;");
+  sendData(true);
 }
 
 void sendData(bool sendCurrent){
