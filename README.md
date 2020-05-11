@@ -12,8 +12,8 @@ An Android Things POC smart thermostat I made for the 2017 Google I/O Extended i
 
 ## Pictures
 
-![internals](res/internals.png)
+![internals](res/internals.jpg)
 
-![exterior](res/exterior.png)
+![exterior](res/exterior.jpg)
 
-![me presenting the project](res/presenting.png)
+![me presenting the project](res/presenting.jpg)
